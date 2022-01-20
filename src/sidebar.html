@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <!--Import Google Icon Font-->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >操作については以下のリンクを参照してください
+        </p>
+        <a class="dropdown-trigger btn" href="#" data-target="dropdown1"
+          >参照リンク</a
+        >
+        <ul id="dropdown1" class="dropdown-content">
+          <li>
+            <a href="#!"
+              ><i class="material-icons">insert_drive_file</i>操作マニュアル</a
+            >
+          </li>
+          <li>
+            <a href="#!"><i class="material-icons">web</i>Webサイト</a>
+          </li>
+        </ul>
+        <br />
+        <br />
+      </div>
+      <div class="row">
+        <p><i class="material-icons">check</i>開催日を選んでください</p>
+        <div class="input-field col s12">
+          <input id="meeting-date" type="text" class="datepicker" />
+          <label for="meeting-date">開催日</label>
+        </div>
+      </div>
+      <div class="row">
+        <p><i class="material-icons">check</i>会の種類を選んでください</p>
+        <div class="input-field col s6">
+          <form id="type">
+            <p>
+              <label>
+                <input
+                  class="with-gap"
+                  name="radio"
+                  type="radio"
+                  value="抄読会"
+                />
+                <span>抄読会</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input
+                  class="with-gap"
+                  name="radio"
+                  type="radio"
+                  value="ポスグラ"
+                />
+                <span>ポスグラ</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input
+                  class="with-gap"
+                  name="radio"
+                  type="radio"
+                  value="休会"
+                />
+                <span>休会</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input
+                  class="with-gap"
+                  name="radio"
+                  type="radio"
+                  value="その他"
+                />
+                <span>その他</span>
+              </label>
+            </p>
+          </form>
+        </div>
+      </div>
+      <div id="jc">
+        <div class="row">
+          <p><i class="material-icons">check</i>担当を2人記入してください</p>
+          <div class="input-field col s12">
+            <input
+              id="presenter-first"
+              type="text"
+              class="autocomplete"
+              name="autocomp"
+            />
+            <label for="presenter-first">抄読会担当1</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input
+              id="presenter-second"
+              type="text"
+              class="autocomplete"
+              name="autocomp"
+            />
+            <label for="presenter-second">抄読会担当2</label>
+          </div>
+        </div>
+      </div>
+      <div id="pgc" class="row">
+        <p><i class="material-icons">check</i>担当を1人記入してください</p>
+        <div class="input-field col s12">
+          <input
+            id="presenter-pgc"
+            type="text"
+            class="autocomplete"
+            name="autocomp"
+          />
+          <label for="presenter-pgc">ポスグラ担当</label>
+        </div>
+      </div>
+      <div id="other" class="row">
+        <p>
+          <i class="material-icons">check</i
+          >その他に通知する必要のあることがあれば記入してください
+        </p>
+        <div class="input-field col s12">
+          <input id="other-information" type="text" class="validate" />
+          <label for="other-information">備考</label>
+        </div>
+      </div>
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >登録ボタンを押すと予定表が更新され、カレンダーが作成されます
+        </p>
+        <a class="waves-effect waves-light btn"
+          ><i class="material-icons right" id="btn">chevron_right</i>登録</a
+        >
+      </div>
+      <br />
+      <br />
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >メールに記載する追記メッセージがあれば記載してください
+        </p>
+        <form class="col s12">
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">mode_edit</i>
+              <textarea
+                id="icon_prefix2"
+                class="materialize-textarea"
+              ></textarea>
+              <label for="icon_prefix2">メールメッセージ</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >メール送信を行う場合は下記のチェックボックスに忘れずにチェックをを入れてください
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" class="filled-in" id="checkbox" />
+            <span>送信します</span>
+          </label>
+        </p>
+        <br />
+      </div>
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >メール送信ボタンを押すと抄読会予定更新の通知メールが送信されます
+        </p>
+        <a class="waves-effect waves-light btn"
+          ><i class="material-icons right" id="send">chevron_right</i
+          >メール送信</a
+        >
+        <br />
+        <br />
+      </div>
+    </div>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      function initDatePicker(settings) {
+        const option = {
+          disableDayFn: function (day) {
+            return day.getDay() !== settings.dayOfWeek;
+          },
+          autoClose: true,
+          minDate: new Date(),
+        };
+        const datePicker = document.getElementById("meeting-date");
+        M.Datepicker.init(datePicker, option);
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const dropdown = document.querySelectorAll(".dropdown-trigger");
+        M.Dropdown.init(dropdown, { constrainWidth: false });
+
+        document.getElementById("btn").addEventListener("click", doStuff);
+        document.getElementById("send").addEventListener("click", doSend);
+
+        google.script.run
+          .withSuccessHandler(initDatePicker)
+          .getJournalClubSettings();
+
+        google.script.run.withSuccessHandler(doAutoComp).getCandidates();
+
+        const radioButton = document.getElementsByName("radio");
+        radioButton.forEach(function (e) {
+          e.addEventListener("click", changeFormByInput);
+        });
+
+        document.getElementById("jc").style.display = "none";
+        document.getElementById("pgc").style.display = "none";
+        document.getElementById("other").style.display = "none";
+      });
+
+      function changeFormByInput() {
+        const radioButton = document.getElementsByName("radio");
+
+        if (radioButton[0].checked === true) {
+          document.getElementById("jc").style.display = "block";
+          document.getElementById("pgc").style.display = "none";
+          document.getElementById("other").style.display = "block";
+          document.getElementById("presenter-pgc").value = "";
+          document.getElementById("other-information").value = "";
+        } else if (radioButton[1].checked === true) {
+          document.getElementById("jc").style.display = "none";
+          document.getElementById("pgc").style.display = "block";
+          document.getElementById("other").style.display = "block";
+          document.getElementById("presenter-first").value = "";
+          document.getElementById("presenter-second").value = "";
+          document.getElementById("other-information").value = "";
+        } else if (radioButton[3].checked === true) {
+          document.getElementById("jc").style.display = "none";
+          document.getElementById("pgc").style.display = "none";
+          document.getElementById("other").style.display = "block";
+          document.getElementById("presenter-first").value = "";
+          document.getElementById("presenter-second").value = "";
+          document.getElementById("presenter-pgc").value = "";
+          document.getElementById("other-information").value = "";
+        } else {
+          document.getElementById("jc").style.display = "none";
+          document.getElementById("pgc").style.display = "none";
+          document.getElementById("other").style.display = "none";
+          document.getElementById("presenter-first").value = "";
+          document.getElementById("presenter-second").value = "";
+          document.getElementById("presenter-pgc").value = "";
+          document.getElementById("other-information").value = "";
+        }
+      }
+      function showAlert(message) {
+        alert(message);
+      }
+      function doStuff() {
+        var userInfo = {};
+
+        userInfo.date = document.getElementById("meeting-date").value;
+        userInfo.type = document.getElementById("type").radio.value;
+        userInfo.presenterFirst =
+          document.getElementById("presenter-first").value;
+        userInfo.presenterSecond =
+          document.getElementById("presenter-second").value;
+        userInfo.presenterPgc = document.getElementById("presenter-pgc").value;
+        userInfo.otherInformation =
+          document.getElementById("other-information").value;
+
+        google.script.run.withSuccessHandler(showAlert).userClicked(userInfo);
+
+        document.getElementById("meeting-date").value = "";
+        const radioButton = document.getElementsByName("radio");
+        radioButton.forEach(function (e) {
+          e.checked = false;
+        });
+        changeFormByInput();
+      }
+      function doAutoComp(candidates) {
+        const elems = document.querySelectorAll(".autocomplete");
+        M.Autocomplete.init(elems, {
+          data: candidates,
+          minLength: 0,
+        });
+      }
+      function doSend() {
+        const message = document.getElementById("icon_prefix2").value;
+        const isChecked = document.getElementById("checkbox").checked;
+        google.script.run
+          .withSuccessHandler(showAlert)
+          .sendEmail(message, isChecked);
+        document.getElementById("icon_prefix2").value = "";
+        document.getElementById("checkbox").checked = false;
+      }
+    </script>
+  </body>
+</html>
