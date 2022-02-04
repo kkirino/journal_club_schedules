@@ -6,55 +6,44 @@ function onOpen() {
 }
 
 function openSidebar() {
-  const htmlOutput = HtmlService.createHtmlOutputFromFile("sidebar").setTitle(
-    "Input New Schedules"
-  );
+  const htmlOutput = HtmlService.createTemplateFromFile("sidebar").evaluate();
   SpreadsheetApp.getUi().showSidebar(htmlOutput);
 }
 
 const ss = SpreadsheetApp.getActiveSpreadsheet();
-const ws = ss.getSheetByName("schedule");
-const numRow = ws.getLastRow() - 1;
-const numCol = ws.getLastColumn();
 
 function getJournalClubSettings() {
-  const settingsSheet = ss.getSheetByName("settings");
-  const settingsTitles = settingsSheet
-    .getRange(2, 1, settingsSheet.getLastRow() - 1, 1)
+  const ws = ss.getSheetByName("settings");
+  const titles = ws
+    .getRange(2, 1, ws.getLastRow() - 1, 1)
     .getValues()
     .map(function (row) {
       return row[0];
     });
-  const settingsValues = settingsSheet
-    .getRange(2, 2, settingsSheet.getLastRow() - 1, 1)
+  const values = ws
+    .getRange(2, 2, ws.getLastRow() - 1, 1)
     .getValues()
     .map(function (row) {
       return row[0];
     });
-
   const dayOfWeekArray = ["日", "月", "火", "水", "木", "金", "土"];
   const settings = {};
   settings.dayOfWeek = dayOfWeekArray.indexOf(
-    settingsValues[settingsTitles.indexOf("抄読会開催曜日")]
+    values[titles.indexOf("抄読会開催曜日")]
   );
-  settings.startHours = settingsValues[settingsTitles.indexOf("開始時")];
-  settings.startMinutes = settingsValues[settingsTitles.indexOf("開始分")];
-  settings.endHours = settingsValues[settingsTitles.indexOf("終了時")];
-  settings.endMinutes = settingsValues[settingsTitles.indexOf("終了分")];
-  settings.meetingUrl =
-    settingsValues[settingsTitles.indexOf("ミーティングURL")];
-  settings.calendarId = settingsValues[settingsTitles.indexOf("カレンダーID")];
-  settings.manualUrl =
-    settingsValues[settingsTitles.indexOf("操作マニュアルURL")];
-  settings.websiteUrl = settingsValues[settingsTitles.indexOf("WebサイトURL")];
-  settings.mailAdress =
-    settingsValues[settingsTitles.indexOf("送信先メールアドレス")];
-
+  settings.startHours = values[titles.indexOf("開始時")];
+  settings.startMinutes = values[titles.indexOf("開始分")];
+  settings.endHours = values[titles.indexOf("終了時")];
+  settings.endMinutes = values[titles.indexOf("終了分")];
+  settings.meetingUrl = values[titles.indexOf("ミーティングURL")];
+  settings.calendarId = values[titles.indexOf("カレンダーID")];
+  settings.mailAdress = values[titles.indexOf("送信先メールアドレス")];
   return settings;
 }
 
 function getCandidates() {
-  const values = ws.getRange(2, 4, numRow, 2).getValues();
+  const ws = ss.getSheetByName("schedule");
+  const values = ws.getRange(2, 4, ws.getLastRow() - 1, 2).getValues();
   var array = [];
   for (let i = 0; i < values.length; i++) {
     for (let j = 0; j < values[0].length; j++) {
@@ -65,7 +54,6 @@ function getCandidates() {
   }
   const set = new Set(array);
   const arrayFromSet = Array.from(set);
-
   var output = {};
   arrayFromSet.forEach(function (e) {
     output[e] = null;
@@ -84,8 +72,9 @@ function userClicked(userInfo) {
   ) {
     return "フォームをすべて埋めてください";
   } else {
+    const ws = ss.getSheetByName("schedule");
     const isInputDateInEachRow = ws
-      .getRange(2, 2, numRow, 1)
+      .getRange(2, 2, ws.getLastRow() - 1, 1)
       .getValues()
       .map(function (row) {
         return row[0] == userInfo.date;
@@ -94,16 +83,13 @@ function userClicked(userInfo) {
     if (inputDateInSheetIndex > -1) {
       ws.deleteRow(inputDateInSheetIndex + 2);
     }
-
     const settings = getJournalClubSettings();
-
     const startTime = new Date(userInfo.date);
     startTime.setHours(settings.startHours);
     startTime.setMinutes(settings.startMinutes);
     const endTime = new Date(userInfo.date);
     endTime.setHours(settings.endHours);
     endTime.setMinutes(settings.endMinutes);
-
     const calendar = CalendarApp.getCalendarById(settings.calendarId);
     if (userInfo.type == "抄読会") {
       var title =
@@ -124,20 +110,16 @@ function userClicked(userInfo) {
     } else {
       var title = "【抄読会】" + userInfo.otherInformation;
     }
-
     const option = {
       description: settings.meetingUrl,
     };
-
     const events = calendar.getEvents(startTime, endTime, {
       search: "【抄読会】",
     });
     events.forEach(function (e) {
       e.deleteEvent();
     });
-
     calendar.createEvent(title, startTime, endTime, option);
-
     ws.appendRow([
       new Date(),
       userInfo.date,
@@ -147,7 +129,6 @@ function userClicked(userInfo) {
       userInfo.presenterPgc,
       userInfo.otherInformation,
     ]);
-
     return "抄読会予定を入力してカレンダーを作成しました";
   }
 }
@@ -166,18 +147,28 @@ function sendEmail(message, isChecked) {
         message +
         "\nよろしくお願いいたします。"
     );
-
     return "抄読会予定更新のメールを送信しました";
   }
 }
 
-function doGet() {
-  return HtmlService.createTemplateFromFile("index").evaluate();
+function getWebAppUrl(page) {
+  const url = ScriptApp.getService().getUrl().toString();
+  return url.replace("dev", "exec") + page;
+}
+
+function doGet(e) {
+  const page = e.parameter["p"];
+  if (page == "index" || page == null) {
+    return HtmlService.createTemplateFromFile("index").evaluate();
+  } else if (page == "manual") {
+    return HtmlService.createTemplateFromFile("manual").evaluate();
+  }
 }
 
 function getTable(yearType) {
+  const ws = ss.getSheetByName("schedule");
   const scheduleInfo = ws
-    .getRange(2, 1, numRow, numCol)
+    .getRange(2, 1, ws.getLastRow() - 1, ws.getLastColumn())
     .getValues()
     .map(function (row) {
       let dateTime = new Date(row[1]);
@@ -193,15 +184,12 @@ function getTable(yearType) {
         otherInformation: row[6],
       };
     });
-
   function compareDate(a, b) {
     return a.dateTime.valueOf() - b.dateTime.valueOf();
   }
   scheduleInfo.sort(compareDate);
-
   const now = new Date();
   var tableText = "";
-
   if (yearType == 0) {
     for (let i = 0; i < scheduleInfo.length; i++) {
       if (scheduleInfo[i].dateTime.valueOf() > now.valueOf()) {
@@ -211,7 +199,6 @@ function getTable(yearType) {
           "</td><td>" +
           scheduleInfo[i].type +
           "</td>";
-
         if (scheduleInfo[i].type == "抄読会") {
           rowText +=
             "<td>" +
@@ -224,7 +211,6 @@ function getTable(yearType) {
         } else {
           rowText = rowText + "<td></td>";
         }
-
         rowText =
           "<tr>" +
           rowText +
@@ -243,10 +229,8 @@ function getTable(yearType) {
       yearStart.setHours(0);
       yearStart.setMinutes(0);
       yearStart.setSeconds(0);
-
       var nextYearStart = new Date(yearStart);
       nextYearStart.setFullYear(Number(yearType) + 1);
-
       if (
         scheduleInfo[i].dateTime.valueOf() > yearStart.valueOf() &&
         scheduleInfo[i].dateTime.valueOf() < nextYearStart.valueOf()
@@ -257,7 +241,6 @@ function getTable(yearType) {
           "</td><td>" +
           scheduleInfo[i].type +
           "</td>";
-
         if (scheduleInfo[i].type == "抄読会") {
           rowText +=
             "<td>" +
@@ -270,7 +253,6 @@ function getTable(yearType) {
         } else {
           rowText = rowText + "<td></td>";
         }
-
         rowText =
           "<tr>" +
           rowText +
@@ -281,6 +263,5 @@ function getTable(yearType) {
       }
     }
   }
-  console.log(scheduleInfo);
   return tableText;
 }

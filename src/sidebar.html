@@ -25,12 +25,14 @@
         >
         <ul id="dropdown1" class="dropdown-content">
           <li>
-            <a href="#!"
-              ><i class="material-icons">insert_drive_file</i>操作マニュアル</a
-            >
+            <a href="<?!= getWebAppUrl('?p=manual'); ?>" target="_blank">
+              <i class="material-icons">insert_drive_file</i>操作マニュアル
+            </a>
           </li>
           <li>
-            <a href="#!"><i class="material-icons">web</i>Webサイト</a>
+            <a href="<?!= getWebAppUrl('?p=index'); ?>" target="_blank">
+              <i class="material-icons">web</i>Webサイト
+            </a>
           </li>
         </ul>
         <br />
@@ -213,29 +215,22 @@
       document.addEventListener("DOMContentLoaded", function () {
         const dropdown = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(dropdown, { constrainWidth: false });
-
         document.getElementById("btn").addEventListener("click", doStuff);
         document.getElementById("send").addEventListener("click", doSend);
-
         google.script.run
           .withSuccessHandler(initDatePicker)
           .getJournalClubSettings();
-
         google.script.run.withSuccessHandler(doAutoComp).getCandidates();
-
         const radioButton = document.getElementsByName("radio");
         radioButton.forEach(function (e) {
           e.addEventListener("click", changeFormByInput);
         });
-
         document.getElementById("jc").style.display = "none";
         document.getElementById("pgc").style.display = "none";
         document.getElementById("other").style.display = "none";
       });
-
       function changeFormByInput() {
         const radioButton = document.getElementsByName("radio");
-
         if (radioButton[0].checked === true) {
           document.getElementById("jc").style.display = "block";
           document.getElementById("pgc").style.display = "none";
@@ -272,7 +267,6 @@
       }
       function doStuff() {
         var userInfo = {};
-
         userInfo.date = document.getElementById("meeting-date").value;
         userInfo.type = document.getElementById("type").radio.value;
         userInfo.presenterFirst =
@@ -282,9 +276,7 @@
         userInfo.presenterPgc = document.getElementById("presenter-pgc").value;
         userInfo.otherInformation =
           document.getElementById("other-information").value;
-
         google.script.run.withSuccessHandler(showAlert).userClicked(userInfo);
-
         document.getElementById("meeting-date").value = "";
         const radioButton = document.getElementsByName("radio");
         radioButton.forEach(function (e) {

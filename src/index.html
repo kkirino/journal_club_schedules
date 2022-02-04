@@ -47,26 +47,21 @@
       document.addEventListener("DOMContentLoaded", function () {
         var select = document.querySelectorAll("select");
         M.FormSelect.init(select);
-
         document
           .getElementById("year-select")
           .addEventListener("change", changeTableYear);
       });
-
       getOption();
       changeTableYear();
-
       function getOption() {
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
-
         if (month > 3) {
           var businessYear = year;
         } else {
           var businessYear = year - 1;
         }
-
         var tableText = "<option value='0' selected>Future Schedules </option>";
         for (let y = businessYear; y >= 2020; y--) {
           var yearText =
@@ -79,15 +74,12 @@
             "</option>";
           tableText = tableText + yearText;
         }
-
         document.getElementById("year-select").innerHTML = tableText;
       }
-
       function changeTableYear() {
         const yearType = document.getElementById("year-select").value;
         google.script.run.withSuccessHandler(renderTable).getTable(yearType);
       }
-
       function renderTable(tableText) {
         document.getElementById("table").innerHTML = tableText;
       }
