@@ -22,19 +22,18 @@
     <div class="container">
       <div class="row">
         <div class="input-field col s6">
-          <select id="year-select"></select>
+          <select id="year-select"><?!= getOption(); ?></select>
           <label>Select Schedule Type</label>
         </div>
       </div>
-
       <div class="row">
         <table class="highlight">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Type of Meeting</th>
-              <th>Presenter</th>
-              <th>Other Information</th>
+              <th>開催日</th>
+              <th>開催予定種別</th>
+              <th>担当</th>
+              <th>その他の連絡事項</th>
             </tr>
           </thead>
           <tbody id="table"></tbody>
@@ -47,41 +46,17 @@
       document.addEventListener("DOMContentLoaded", function () {
         var select = document.querySelectorAll("select");
         M.FormSelect.init(select);
+        changeTableYear();
         document
           .getElementById("year-select")
           .addEventListener("change", changeTableYear);
       });
-      getOption();
-      changeTableYear();
-      function getOption() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        if (month > 3) {
-          var businessYear = year;
-        } else {
-          var businessYear = year - 1;
-        }
-        var tableText = "<option value='0' selected>Future Schedules </option>";
-        for (let y = businessYear; y >= 2020; y--) {
-          var yearText =
-            "<option value='" +
-            y +
-            "'>Apr. " +
-            y +
-            " - Mar. " +
-            (y + 1) +
-            "</option>";
-          tableText = tableText + yearText;
-        }
-        document.getElementById("year-select").innerHTML = tableText;
+      function renderTable(tableText) {
+        document.getElementById("table").innerHTML = tableText;
       }
       function changeTableYear() {
         const yearType = document.getElementById("year-select").value;
         google.script.run.withSuccessHandler(renderTable).getTable(yearType);
-      }
-      function renderTable(tableText) {
-        document.getElementById("table").innerHTML = tableText;
       }
     </script>
   </body>

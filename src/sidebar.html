@@ -25,12 +25,12 @@
         >
         <ul id="dropdown1" class="dropdown-content">
           <li>
-            <a href="<?!= getWebAppUrl('?p=manual'); ?>" target="_blank">
+            <a href="<?!= getSettings().manualPageUrl; ?>" target="_blank">
               <i class="material-icons">insert_drive_file</i>操作マニュアル
             </a>
           </li>
           <li>
-            <a href="<?!= getWebAppUrl('?p=index'); ?>" target="_blank">
+            <a href="<?!= getSettings().webAppUrl; ?>" target="_blank">
               <i class="material-icons">web</i>Webサイト
             </a>
           </li>
@@ -217,9 +217,7 @@
         M.Dropdown.init(dropdown, { constrainWidth: false });
         document.getElementById("btn").addEventListener("click", doStuff);
         document.getElementById("send").addEventListener("click", doSend);
-        google.script.run
-          .withSuccessHandler(initDatePicker)
-          .getJournalClubSettings();
+        google.script.run.withSuccessHandler(initDatePicker).getSettings();
         google.script.run.withSuccessHandler(doAutoComp).getCandidates();
         const radioButton = document.getElementsByName("radio");
         radioButton.forEach(function (e) {
