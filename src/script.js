@@ -43,10 +43,10 @@ function getSettings() {
   return settings;
 }
 
-function getCandidates() {
+function getDoctorNamesArray() {
   const ws = ss.getSheetByName("schedule");
   const values = ws.getRange(2, 4, ws.getLastRow() - 1, 2).getValues();
-  var array = [];
+  const array = [];
   for (let i = 0; i < values.length; i++) {
     for (let j = 0; j < values[0].length; j++) {
       if (values[i][j] !== "") {
@@ -56,11 +56,77 @@ function getCandidates() {
   }
   const set = new Set(array);
   const arrayFromSet = Array.from(set);
-  var output = {};
-  arrayFromSet.forEach(function (e) {
+  return arrayFromSet;
+}
+
+function getCandidates() {
+  const array = getDoctorNamesArray();
+  const output = {};
+  array.forEach(function (e) {
     output[e] = null;
   });
   return output;
+}
+
+function createSheetForSelect() {
+  const businessYear = getBusinessYear();
+  const dateStartThisBusinessYear = new Date(businessYear, 3, 1);
+  const dateEndThisBusinessYear = new Date(businessYear + 1, 3, 1);
+  const now = new Date();
+  const yearNow = now.getMonth();
+  const monthNow = now.getMonth();
+  const dateStartThisThreeMonth = new Date();
+  dateStartThisThreeMonth.setFullYear(yearNow - Number(monthNow < 3));
+  dateStartThisThreeMonth.setMonth(monthNow + 12 * Number(monthNow < 3) - 3);
+  const scheduleInfo = getScheduleInfo();
+  const scheduleThisBusinessYear = scheduleInfo.filter(function (schedule) {
+    return (
+      schedule.dateTime.valueOf() > dateStartThisBusinessYear.valueOf() &&
+      schedule.dateTime.valueOf() < dateEndThisBusinessYear.valueOf() &&
+      schedule.type === "抄読会"
+    );
+  });
+  const scheduleThisThreeMonth = scheduleInfo.filter(function (schedule) {
+    return schedule.dateTime.valueOf() > dateStartThisThreeMonth;
+  });
+  const doctorNames = getDoctorNamesArray();
+  const arrayForWriteSheet = doctorNames.map(function (name) {
+    var numThisBusinessYear = 0;
+    var numThisThreeMonth = 0;
+    var latestDate = new Date(dateStartThisThreeMonth);
+    scheduleThisBusinessYear.forEach(function (schedule) {
+      if (
+        schedule.presenterFirst === name ||
+        schedule.presenterSecond === name
+      ) {
+        numThisBusinessYear += 1;
+      }
+    });
+    scheduleThisThreeMonth.forEach(function (schedule) {
+      if (
+        schedule.presenterFirst === name ||
+        schedule.presenterSecond === name
+      ) {
+        numThisThreeMonth += 1;
+        if (schedule.dateTime.valueOf() > latestDate.valueOf()) {
+          latestDate = schedule.dateTime;
+        }
+      }
+    });
+    if (latestDate === dateStartThisThreeMonth) {
+      latestDate = "";
+    }
+    return [name, numThisBusinessYear, numThisThreeMonth, latestDate];
+  });
+  infoForSelect.sort(function (a, b) {
+    return b.numPresent - a.numPresent;
+  });
+  Logger.log(arrayForWriteSheet);
+  const tmp = ss.getSheetByName("tmp");
+  const ws = tmp.copyTo(ss);
+  ws.setName(now.toLocaleDateString() + " " + now.toLocaleTimeString());
+  ws.getRange(3, 1, arrayForWriteSheet.length, 4).setValues(arrayForWriteSheet);
+  return "担当状況を記載したシートを作成しました";
 }
 
 function userClicked(userInfo) {
@@ -138,33 +204,20 @@ function userClicked(userInfo) {
   }
 }
 
-function sendEmail(message, isChecked) {
-  const settings = getSettings();
-  if (isChecked === false) {
-    return "チェックボックスにチェックを入れてください";
-  } else {
-    MailApp.sendEmail(
-      settings.mailAdress,
-      "【お知らせ】抄読会の予定【更新】",
-      "みなさま\n\n抄読会の予定を更新しましたのでご連絡いたします。\nお手数ですが下記URLより日程と担当をご確認ください。\n" +
-        settings.webAppUrl +
-        "\n" +
-        message +
-        "\nよろしくお願いいたします。"
-    );
-    return "抄読会予定更新のメールを送信しました";
-  }
-}
-
 function doGet() {
   return HtmlService.createTemplateFromFile("index").evaluate();
 }
 
-function getOption() {
+function getBusinessYear() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const businessYear = year - Number(month < 4);
+  return businessYear;
+}
+
+function getOption() {
+  const businessYear = getBusinessYear();
   let tableText = "<option value='0' selected>Future Schedules </option>";
   for (let y = businessYear; y >= 2020; y--) {
     let yearText =
@@ -180,7 +233,7 @@ function getOption() {
   return tableText;
 }
 
-function getTable(yearType) {
+function getScheduleInfo() {
   const ws = ss.getSheetByName("schedule");
   const scheduleInSheet = ws
     .getRange(2, 1, ws.getLastRow() - 1, ws.getLastColumn())
@@ -199,6 +252,11 @@ function getTable(yearType) {
       otherInformation: row[6],
     };
   });
+  return scheduleInfo;
+}
+
+function getTable(yearType) {
+  const scheduleInfo = getScheduleInfo();
   function compareDate(a, b) {
     return a.dateTime.valueOf() - b.dateTime.valueOf();
   }

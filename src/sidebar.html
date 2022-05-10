@@ -21,7 +21,7 @@
           >操作については以下のリンクを参照してください
         </p>
         <a class="dropdown-trigger btn" href="#" data-target="dropdown1"
-          >参照リンク</a
+          >参照リンク<i class="material-icons right">link</i></a
         >
         <ul id="dropdown1" class="dropdown-content">
           <li>
@@ -35,6 +35,18 @@
             </a>
           </li>
         </ul>
+        <br />
+        <br />
+      </div>
+      <div class="row">
+        <p>
+          <i class="material-icons">check</i
+          >最近の担当者情報を得るには下のボタンを押してください
+        </p>
+        <a class="waves-effect waves-light btn"
+          ><i class="material-icons right" id="get-btn">info_outline</i
+          >担当者情報</a
+        >
         <br />
         <br />
       </div>
@@ -149,54 +161,12 @@
           >登録ボタンを押すと予定表が更新され、カレンダーが作成されます
         </p>
         <a class="waves-effect waves-light btn"
-          ><i class="material-icons right" id="btn">chevron_right</i>登録</a
+          ><i class="material-icons right" id="send-btn">chevron_right</i
+          >登録</a
         >
       </div>
       <br />
       <br />
-      <div class="row">
-        <p>
-          <i class="material-icons">check</i
-          >メールに記載する追記メッセージがあれば記載してください
-        </p>
-        <form class="col s12">
-          <div class="row">
-            <div class="input-field col s12">
-              <i class="material-icons prefix">mode_edit</i>
-              <textarea
-                id="icon_prefix2"
-                class="materialize-textarea"
-              ></textarea>
-              <label for="icon_prefix2">メールメッセージ</label>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="row">
-        <p>
-          <i class="material-icons">check</i
-          >メール送信を行う場合は下記のチェックボックスに忘れずにチェックをを入れてください
-        </p>
-        <p>
-          <label>
-            <input type="checkbox" class="filled-in" id="checkbox" />
-            <span>送信します</span>
-          </label>
-        </p>
-        <br />
-      </div>
-      <div class="row">
-        <p>
-          <i class="material-icons">check</i
-          >メール送信ボタンを押すと抄読会予定更新の通知メールが送信されます
-        </p>
-        <a class="waves-effect waves-light btn"
-          ><i class="material-icons right" id="send">chevron_right</i
-          >メール送信</a
-        >
-        <br />
-        <br />
-      </div>
     </div>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -215,8 +185,10 @@
       document.addEventListener("DOMContentLoaded", function () {
         const dropdown = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(dropdown, { constrainWidth: false });
-        document.getElementById("btn").addEventListener("click", doStuff);
-        document.getElementById("send").addEventListener("click", doSend);
+        document
+          .getElementById("get-btn")
+          .addEventListener("click", doCreateSheet);
+        document.getElementById("send-btn").addEventListener("click", doStuff);
         google.script.run.withSuccessHandler(initDatePicker).getSettings();
         google.script.run.withSuccessHandler(doAutoComp).getCandidates();
         const radioButton = document.getElementsByName("radio");
@@ -264,7 +236,7 @@
         alert(message);
       }
       function doStuff() {
-        var userInfo = {};
+        const userInfo = {};
         userInfo.date = document.getElementById("meeting-date").value;
         userInfo.type = document.getElementById("type").radio.value;
         userInfo.presenterFirst =
@@ -289,14 +261,8 @@
           minLength: 0,
         });
       }
-      function doSend() {
-        const message = document.getElementById("icon_prefix2").value;
-        const isChecked = document.getElementById("checkbox").checked;
-        google.script.run
-          .withSuccessHandler(showAlert)
-          .sendEmail(message, isChecked);
-        document.getElementById("icon_prefix2").value = "";
-        document.getElementById("checkbox").checked = false;
+      function doCreateSheet() {
+        google.script.run.withSuccessHandler(showAlert).createSheetForSelect();
       }
     </script>
   </body>
